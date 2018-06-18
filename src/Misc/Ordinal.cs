@@ -141,19 +141,18 @@ namespace Yorishige {
 		private static void Validate(int value) {
 			if (value < _minValue || value > _maxValue) throw new OverflowException();
 		}
-
 		#endregion
 	}
 
     public static class OrdinalExtensions {
 		public static IEnumerable<T> SkipTo<T>(this IEnumerable<T> source, Ordinal ordinal) {
-			return source.Skip(ordinal.ToInt32());
+			return source.Skip(ordinal.ToInt32() - 1);
 		}
         public static T ElementAt<T>(this IEnumerable<T> source, Ordinal ordinal) {
-			return source.ElementAt(ordinal.ToInt32());
+			return source.ElementAt(ordinal.ToInt32() - 1);
 		}
 		public static T ElementAtOrDefault<T>(this IEnumerable<T> source, Ordinal ordinal) {
-			return source.ElementAtOrDefault(ordinal.ToInt32());
+			return source.ElementAtOrDefault(ordinal.ToInt32() - 1);
 		}
 	}
 }

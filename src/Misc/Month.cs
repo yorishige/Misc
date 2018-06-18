@@ -40,7 +40,6 @@ namespace Yorishige {
 
 		public Month Previous { get { return this.Add(-1); } }
 		public Month Next { get { return this.Add(1); } }
-
 		#endregion
 
 		#region "methods"

@@ -2,17 +2,20 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace Yorishige {
-	[StructLayout(LayoutKind.Sequential, Size = sizeof(int), Pack = sizeof(int))]
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct DateInt32 {
 		#region "member variables"
-		private int _Value;
+		private short _year;
+		private byte _month;
+		private byte _day;
 		#endregion
 
 		#region "constructors"
-		public DateInt32(DateTime date) {
-			_Value = DateToInt32(date);
+		public DateInt32(DateTime date) : this(date.Year, date.Month, date.Day) {
 		}
-		public DateInt32(int year, int month, int day) : this(new DateTime(year, month, day)) {
+		public DateInt32(int year, int month, int day) {
+			_year = _month = _day = 0;
+			SetElements(year, month, day);
 		}
 		#endregion
 
@@ -27,54 +30,46 @@ namespace Yorishige {
 
         public int Value {
             get {
-				return _Value;
+				return JoinElements(this.Year, this.Month, this.Day);
 			}
             set {
-                _Value = DateToInt32(Int32ToDate(value));
+				var e = SplitInt32ToElements(value);
+				SetElements(e[0], e[1], e[2]);
 			}
         }
 
         public DateTime Date {
 			get {
-				return Int32ToDate(_Value);
+				return new DateTime(this.Year, this.Month, this.Day);
 			}
 			set {
-                _Value = DateToInt32(value);
+				SetElements(value.Year, value.Month, value.Day);
 			}
 		}
 
-		public int Year     { get { return YearOf(_Value); } }
-		public int Month    { get { return MonthOf(_Value); } }
-		public int Day      { get { return DayOf(_Value); } }
+		public int Year     { get { return (int)_year; } }
+		public int Month    { get { return (int)_month; } }
+		public int Day      { get { return (int)_day; } }
 
         public DayOfWeek DayOfWeek {get { return this.Date.DayOfWeek; } }
-
-
 		#endregion
 
-
-
-
 		#region "privates"
-		private static int DateToInt32(DateTime value) {
-			return value.Year * 10000 + value.Month * 100 + value.Day;
+		private void SetElements(int year, int month, int day) {
+			_year = (short)year;
+			_month = (byte)month;
+			_day = (byte)day;
 		}
-		private static DateTime Int32ToDate(int value) {
-			return new DateTime(YearOf(value), MonthOf(value), DayOf(value));
+		private static int[] SplitInt32ToElements(int value) {
+			var e = new int[3];
+			e[0] = Math.DivRem(Math.DivRem(value, 100, out e[2]), 100, out e[1]);
+			return e;
 		}
-		private static int YearOf(int value) {
-			return value / 10000;
-		}
-        private static int MonthOf(int value) {
-			return (value / 100) % 100;
-		}
-        private static int DayOf(int value) {
-			return value % 100;
+		private static int JoinElements(int year, int month, int day) {
+			return year * 10000 + month * 100 + day;
 		}
 
-		private static int GetCurrent() {
-			return DateToInt32(DateTime.Today);
-		}
+
         #endregion
 	}
 }
