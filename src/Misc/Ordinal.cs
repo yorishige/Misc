@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Yorishige {
+	[StructLayout(LayoutKind.Sequential, Pack=sizeof(int))]
     public struct Ordinal : 
         IEquatable<Ordinal>, 
         IComparable,
@@ -89,6 +91,10 @@ namespace Yorishige {
         public Ordinal Add(int value) {
 			return new Ordinal(this.ToInt32() + value);
 		}
+
+		public T Of<T>(IEnumerable<T> source) {
+			return source.Nth(this.ToInt32());
+		}
 		#endregion
 
 		#region "operators"
@@ -111,6 +117,13 @@ namespace Yorishige {
 		}
 		public static int operator -(Ordinal x, Ordinal y) {
 			return x.ToInt32() - y.ToInt32();
+		}
+
+		public static Ordinal operator ++(Ordinal x) {
+			return x.Add(1);
+		}
+		public static Ordinal operator --(Ordinal x) {
+			return x.Add(-1);
 		}
 		#endregion
 
